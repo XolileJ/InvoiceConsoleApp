@@ -11,18 +11,12 @@ namespace InviceConsoleApp.Service.Services
     {
         private readonly IMapper mapper;
         private readonly IInvoiceHeaderRepository invoiceHeaderRepository;
-        private readonly IInvoiceLineRepository invoiceLineRepository;
-        private readonly IConfiguration configuration;
 
         public InvoiceConsoleAppService(IMapper _mapper,
-            IInvoiceHeaderRepository invoiceHeaderRepository,
-            IInvoiceLineRepository invoiceLineRepository,
-            IConfiguration configuration)
+            IInvoiceHeaderRepository invoiceHeaderRepository)
         {
             mapper = _mapper;
             this.invoiceHeaderRepository = invoiceHeaderRepository;
-            this.invoiceLineRepository = invoiceLineRepository;
-            this.configuration = configuration;
         }
 
         public void Create(IEnumerable<InvoiceHeaderViewModel> invoiceHeaders)
