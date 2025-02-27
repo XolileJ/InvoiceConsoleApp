@@ -9,8 +9,8 @@ using InvoiceConsoleApp.Infra.Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
 using System.Globalization;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 try
 {
@@ -29,13 +29,27 @@ try
         .AddScoped<IInvoiceLineRepository, InvoiceLineRepository>()
                 .BuildServiceProvider();
 
+    string filePath = config["Settings:LogFilePath"];
+    string fileName = config["Settings:LogFileName"];
+
+    Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.RollingFile(Path.Combine(filePath, fileName))
+    .CreateLogger();
+
+    Log.Information("InvoicConsoleApp - Started.");
+
     var invoiceService = serviceProvider.GetRequiredService<IInvoiceConsoleAppService>();
+    Log.Information("InvoiceConsoleAppService registered");
 
     var existingInvoiceNumbers = invoiceService.GetListOfInvoiceNumbers();
+    Log.Information("Db call to query existing records to be used for validation duplicates.");
 
     var invoiceDataList = ReadCsvFile(AppContext.BaseDirectory + "data.csv", existingInvoiceNumbers);
 
+    Log.Information("Data import started..");
     invoiceService.Create(invoiceDataList);
+    Log.Information("Data import finished..");
 
     var invoiceNumberAndQuatityViewModel = invoiceService.GetInvoiceNumberAndSumOfAssociatedLines(invoiceDataList);
 
@@ -51,6 +65,7 @@ try
 
     static List<InvoiceHeaderViewModel> ReadCsvFile(string filePath, IEnumerable<InvoiceHeaderViewModel> existingInvoiceNumbers)
     {
+        Log.Information("Reading Csv File..");
         var invoiceDataList = new List<InvoiceHeaderViewModel>();
         var invoiceHeaders = new List<InvoiceHeaderViewModel>();
         var invoiceLines = new List<InvoiceLineViewModel>();
@@ -60,7 +75,7 @@ try
 
         if (!File.Exists(filePath))
         {
-            throw new FileNotFoundException("The specified file does not exist.", filePath);
+            Log.Error("The specified file does not exist.");
         }
 
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -119,11 +134,13 @@ try
                 }
             }
         }
+        Log.Information("Read Csv File successfully..");
 
         return invoiceDataList;
     }
 }
 catch (Exception ex)
 {
-    Console.WriteLine(ex.ToString());
+    Console.WriteLine("An error occured. Please check system logs for further information");
+    Log.Error(ex.ToString(), "An error occurred.");
 }
