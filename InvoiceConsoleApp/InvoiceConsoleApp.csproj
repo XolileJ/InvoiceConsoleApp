@@ -36,7 +36,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\InviceConsoleApp.Service\InviceConsoleApp.Service.csproj" />
-    <ProjectReference Include="..\InvoiceConsoleApp.Infra.CrossCutting.IoC\InvoiceConsoleApp.Infra.CrossCutting.IoC.csproj" />
     <ProjectReference Include="..\InvoiceConsoleApp.Infra.Data\InvoiceConsoleApp.Infra.Data.csproj" />
   </ItemGroup>
 

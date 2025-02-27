@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 try
 {
@@ -34,7 +35,7 @@ try
 
     var invoiceDataList = ReadCsvFile(AppContext.BaseDirectory + "data.csv", existingInvoiceNumbers);
 
-    //invoiceService.Create(invoiceDataList);
+    invoiceService.Create(invoiceDataList);
 
     var invoiceNumberAndQuatityViewModel = invoiceService.GetInvoiceNumberAndSumOfAssociatedLines(invoiceDataList);
 
@@ -44,8 +45,8 @@ try
     Console.WriteLine($"===========================================================================================");
     invoiceNumberAndQuatityViewModel?.ToList().ForEach(x => Console.WriteLine($"Invoice Number: {x.InvoiceNumber} and Total Quantity: {x.TotalQuantity}"));
     Console.WriteLine($"===========================================================================================");
-    Console.WriteLine($"Sum of all InvoiceHeader.InvoiceTotal: {balanceCheck.HeaderInvoiceTotal}");
-    Console.WriteLine($"Sum of InvoiceLines.Quantity * InvoiceLines.UnitSellingPriceExVAT: {balanceCheck.ProductOfQuantityAndUnitPrice}");
+    Console.WriteLine($"Sum of all InvoiceHeader.InvoiceTotal: {Math.Round((decimal)balanceCheck.HeaderInvoiceTotal, 2)}");
+    Console.WriteLine($"Sum of InvoiceLines.Quantity * InvoiceLines.UnitSellingPriceExVAT: {Math.Round((decimal)balanceCheck.ProductOfQuantityAndUnitPrice, 2)}");
 
 
     static List<InvoiceHeaderViewModel> ReadCsvFile(string filePath, IEnumerable<InvoiceHeaderViewModel> existingInvoiceNumbers)
@@ -114,10 +115,7 @@ try
 
                 foreach (var line in group.Lines)
                 {
-                    if (!invoiceLines.Any(x => x.InvoiceNumber == line.InvoiceNumber && x.Description == line.Description && x.Quantity == line.Quantity))
-                    {
-                        header.InvoiceLines.Add(line);
-                    }                   
+                    header.InvoiceLines.Add(line);
                 }
             }
         }

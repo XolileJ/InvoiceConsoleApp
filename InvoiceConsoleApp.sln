@@ -5,8 +5,6 @@ VisualStudioVersion = 17.13.35806.99
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvoiceConsoleApp", "InvoiceConsoleApp\InvoiceConsoleApp.csproj", "{6B645BBE-33FD-45CC-8549-39FA1D29F513}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvoiceConsoleApp.Infra.CrossCutting.IoC", "InvoiceConsoleApp.Infra.CrossCutting.IoC\InvoiceConsoleApp.Infra.CrossCutting.IoC.csproj", "{5AD22DC5-F6E2-4330-AA9B-E29178D47922}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvoiceConsoleApp.Infra.Data", "InvoiceConsoleApp.Infra.Data\InvoiceConsoleApp.Infra.Data.csproj", "{F339C25F-7247-4535-9315-CB540C3A323C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InviceConsoleApp.Service", "InviceConsoleApp.Service\InviceConsoleApp.Service.csproj", "{A7D015E8-9E82-4235-8D8C-A953A547A4F5}"
@@ -23,10 +21,6 @@ Global
 		{6B645BBE-33FD-45CC-8549-39FA1D29F513}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B645BBE-33FD-45CC-8549-39FA1D29F513}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B645BBE-33FD-45CC-8549-39FA1D29F513}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5AD22DC5-F6E2-4330-AA9B-E29178D47922}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5AD22DC5-F6E2-4330-AA9B-E29178D47922}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5AD22DC5-F6E2-4330-AA9B-E29178D47922}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5AD22DC5-F6E2-4330-AA9B-E29178D47922}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F339C25F-7247-4535-9315-CB540C3A323C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F339C25F-7247-4535-9315-CB540C3A323C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F339C25F-7247-4535-9315-CB540C3A323C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -41,7 +35,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6B645BBE-33FD-45CC-8549-39FA1D29F513} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
-		{5AD22DC5-F6E2-4330-AA9B-E29178D47922} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{F339C25F-7247-4535-9315-CB540C3A323C} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{A7D015E8-9E82-4235-8D8C-A953A547A4F5} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
