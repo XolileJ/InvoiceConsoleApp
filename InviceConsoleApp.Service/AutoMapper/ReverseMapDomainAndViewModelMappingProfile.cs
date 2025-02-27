@@ -4,12 +4,12 @@ using InvoiceConsoleApp.Infra.Data.Models;
 
 namespace InviceConsoleApp.Service.AutoMapper
 {
-    internal class DomainToViewModelMappingProfile : Profile
+    internal class ReverseMapDomainAndViewModelMappingProfile : Profile
     {
         /// <summary>
         /// Map entity framework objects to service models
         /// </summary>
-        public DomainToViewModelMappingProfile()
+        public ReverseMapDomainAndViewModelMappingProfile()
         {
             CreateMap<InvoiceHeader, InvoiceHeaderViewModel>()
                 .ReverseMap();

@@ -17,9 +17,9 @@ namespace InvoiceConsoleApp.Infra.Data.Models
         [StringLength(100)]
         public string? Description { get; set; }
 
-        public float? Quantity { get; set; }
+        public double Quantity { get; set; }
 
-        public float? UnitSellingPriceExVAT { get; set; }
+        public double UnitSellingPriceExVAT { get; set; }
 
         [ForeignKey("InvoiceNumber")]
         public virtual required InvoiceHeader InvoiceHeader { get; set; }

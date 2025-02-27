@@ -7,13 +7,11 @@ namespace InvoiceConsoleApp.Infra.Data.Repository
     public class InvoiceHeaderRepository(InvoiceConsoleAppDbContext context) :
         InvoiceConsoleAppRepository<InvoiceHeader>(context), IInvoiceHeaderRepository
     {
-        public IEnumerable<InvoiceHeader> GetAllInvoices()
+        public IEnumerable<string> GetAllInvoiceNumbers()
         {
-            var test = context.InvoiceHeader
-                              .Select(x = new { })
+            return context.InvoiceHeader
+                              .Select(x => x.InvoiceNumber)
                               .ToList();
-
-            return new List<InvoiceHeader>();
         }
     }
 }

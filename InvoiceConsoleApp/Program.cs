@@ -1,10 +1,8 @@
-﻿using AutoMapper;
-using CsvHelper;
+﻿using CsvHelper;
 using CsvHelper.Configuration;
 using InviceConsoleApp.Service.Interfaces;
 using InviceConsoleApp.Service.Services;
 using InviceConsoleApp.Service.ViewModels;
-using InvoiceConsoleApp.Infra.CrossCutting.IoC;
 using InvoiceConsoleApp.Infra.Data.Context;
 using InvoiceConsoleApp.Infra.Data.Interfaces;
 using InvoiceConsoleApp.Infra.Data.Repository;
@@ -30,27 +28,34 @@ try
         .AddScoped<IInvoiceLineRepository, InvoiceLineRepository>()
                 .BuildServiceProvider();
 
-    //RegisterServices(serviceProvider);
-
-    //static void RegisterServices(ServiceCollection services)
-    //{
-    //    // Adding dependencies from another layers (isolated from Presentation)
-    //    SimpleInjectorBootStrapper.RegisterServices(services);
-    //}
-
-    var invoiceDataList = ReadCsvFile(AppContext.BaseDirectory + "data.csv");
-
     var invoiceService = serviceProvider.GetRequiredService<IInvoiceConsoleAppService>();
+
+    var existingInvoiceNumbers = invoiceService.GetListOfInvoiceNumbers();
+
+    var invoiceDataList = ReadCsvFile(AppContext.BaseDirectory + "data.csv", existingInvoiceNumbers);
 
     //invoiceService.Create(invoiceDataList);
 
-    var total = invoiceService.GetProductOfQuantityAndUnitSellingPriceExVAT();
+    var invoiceNumberAndQuatityViewModel = invoiceService.GetInvoiceNumberAndSumOfAssociatedLines(invoiceDataList);
 
-    static List<InvoiceHeaderViewModel> ReadCsvFile(string filePath)
+    var balanceCheck = invoiceService.GetProductOfQuantityAndUnitSellingPriceExVAT(invoiceDataList);
+
+    Console.WriteLine($"\t\t\tInvoice Number and Total Quantity");
+    Console.WriteLine($"===========================================================================================");
+    invoiceNumberAndQuatityViewModel?.ToList().ForEach(x => Console.WriteLine($"Invoice Number: {x.InvoiceNumber} and Total Quantity: {x.TotalQuantity}"));
+    Console.WriteLine($"===========================================================================================");
+    Console.WriteLine($"Sum of all InvoiceHeader.InvoiceTotal: {balanceCheck.HeaderInvoiceTotal}");
+    Console.WriteLine($"Sum of InvoiceLines.Quantity * InvoiceLines.UnitSellingPriceExVAT: {balanceCheck.ProductOfQuantityAndUnitPrice}");
+
+
+    static List<InvoiceHeaderViewModel> ReadCsvFile(string filePath, IEnumerable<InvoiceHeaderViewModel> existingInvoiceNumbers)
     {
         var invoiceDataList = new List<InvoiceHeaderViewModel>();
+        var invoiceHeaders = new List<InvoiceHeaderViewModel>();
         var invoiceLines = new List<InvoiceLineViewModel>();
-        var invoiceNumbers = new HashSet<string>();
+
+        invoiceDataList.AddRange(existingInvoiceNumbers);
+        existingInvoiceNumbers.ToList().ForEach(x => invoiceLines.AddRange(x.InvoiceLines?.ToList() ?? []));
 
         if (!File.Exists(filePath))
         {
@@ -74,14 +79,17 @@ try
             while (csv.Read())
             {
                 var record = csv.GetRecord<InvoiceHeaderViewModel>();
-                if (invoiceNumbers.Add(record.InvoiceNumber))
+                if (!invoiceDataList.Any(x => x.InvoiceNumber == record.InvoiceNumber))
                 {
-                    record.InvoiceLines = new List<InvoiceLineViewModel>();
+                    record.InvoiceLines = record.InvoiceLines ?? [];
                     invoiceDataList.Add(record);
                 }
 
                 var lineRecord = csv.GetRecord<InvoiceLineViewModel>();
-                invoiceLines.Add(lineRecord);
+                if (!invoiceLines.Any(x => x.InvoiceNumber == record.InvoiceNumber && x.Description == lineRecord.Description && x.Quantity == lineRecord.Quantity))
+                {
+                    invoiceLines.Add(lineRecord);
+                }
             }
         }
 
@@ -103,9 +111,13 @@ try
                 {
                     header.InvoiceLines = new List<InvoiceLineViewModel>();
                 }
+
                 foreach (var line in group.Lines)
                 {
-                    header.InvoiceLines.Add(line);
+                    if (!invoiceLines.Any(x => x.InvoiceNumber == line.InvoiceNumber && x.Description == line.Description && x.Quantity == line.Quantity))
+                    {
+                        header.InvoiceLines.Add(line);
+                    }                   
                 }
             }
         }

@@ -10,7 +10,7 @@
 
         public string? Address { get; set; }
 
-        public float? InvoiceTotal { get; set; }
+        public double InvoiceTotal { get; set; }
 
         public virtual ICollection<InvoiceLineViewModel>? InvoiceLines { get; set; }
     }

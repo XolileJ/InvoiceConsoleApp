@@ -4,6 +4,6 @@ namespace InvoiceConsoleApp.Infra.Data.Interfaces
 {
     public interface IInvoiceHeaderRepository : IInvoiceConsoleAppRepository<InvoiceHeader>
     {
-        IEnumerable<InvoiceHeader> GetAllInvoices();
+        IEnumerable<string> GetAllInvoiceNumbers();
     }
 }

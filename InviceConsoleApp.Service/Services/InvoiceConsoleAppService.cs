@@ -1,12 +1,9 @@
 ﻿using AutoMapper;
 using InviceConsoleApp.Service.Interfaces;
 using InviceConsoleApp.Service.ViewModels;
-using InvoiceConsoleApp.Infra.Data.Context;
 using InvoiceConsoleApp.Infra.Data.Interfaces;
 using InvoiceConsoleApp.Infra.Data.Models;
 using Microsoft.Extensions.Configuration;
-using OfficeOpenXml;
-using System.IO;
 
 namespace InviceConsoleApp.Service.Services
 {
@@ -34,26 +31,39 @@ namespace InviceConsoleApp.Service.Services
             invoiceHeaderRepository.SaveChanges();
         }
 
-        public float GetProductOfQuantityAndUnitSellingPriceExVAT()
+        public BalanceCheckViewModel GetProductOfQuantityAndUnitSellingPriceExVAT(IEnumerable<InvoiceHeaderViewModel> invoiceHeaders)
         {
-            var test = invoiceHeaderRepository.GetAllInvoices();
+            var invoiceLines = invoiceHeaders.Select(x => x?.InvoiceLines).ToList();
 
-            var invoiceHeaders = invoiceHeaderRepository
-                                .GetAll()
-                                .Select(x => new
-                                {
-                                    Quantity = x.InvoiceTotal != null ? (float)x.InvoiceTotal : 0,
-                                    InvoiceLines = new List<InvoiceLine>()
-                                    //InvoiceLines = x.InvoiceLines?.Select(line => new
-                                    //{
-                                    //    Quantity = line.Quantity != null ? (float)line.Quantity : 0,
-                                    //    UnitPrice = line.UnitSellingPriceExVAT != null ? (float)line.UnitSellingPriceExVAT : 0,
-                                    //    Total = line.Quantity != null && line.UnitSellingPriceExVAT != null ?
-                                    //            (float)(line.Quantity * line.UnitSellingPriceExVAT) : 0
-                                    //}).ToList()
-                                })
-                                .ToList();
-            return 0;
+            var balanceCheckViewModel = new BalanceCheckViewModel()
+            {
+                HeaderInvoiceTotal = invoiceHeaders.Sum(x => x.InvoiceTotal),
+                ProductOfQuantityAndUnitPrice = invoiceLines.Sum(x => x.Sum(y => y.Quantity * y.UnitSellingPriceExVAT))
+            };
+
+            return balanceCheckViewModel;
+        }
+
+        public IEnumerable<InvoiceNumberAndQuatityViewModel> GetInvoiceNumberAndSumOfAssociatedLines(IEnumerable<InvoiceHeaderViewModel> invoiceHeaders)
+        {
+            var invoiceLines = new List<InvoiceNumberAndQuatityViewModel>();
+
+            invoiceHeaders.ToList().ForEach(x =>
+            {
+                var totalQuantity = x.InvoiceLines.Sum(y => y.Quantity);
+                invoiceLines.Add(new InvoiceNumberAndQuatityViewModel
+                {
+                    InvoiceNumber = x.InvoiceNumber,
+                    TotalQuantity = totalQuantity
+                });
+            });
+
+            return invoiceLines;
+        }
+
+        public IEnumerable<InvoiceHeaderViewModel> GetListOfInvoiceNumbers()
+        {
+            return mapper.Map<List<InvoiceHeaderViewModel>>(invoiceHeaderRepository.GetAll());
         }
 
         public void Dispose()

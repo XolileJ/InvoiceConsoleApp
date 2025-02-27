@@ -8,9 +8,9 @@
 
         public string? Description { get; set; }
 
-        public float? Quantity { get; set; }
+        public double Quantity { get; set; }
 
-        public float? UnitSellingPriceExVAT { get; set; }
+        public double UnitSellingPriceExVAT { get; set; }
 
         public required InvoiceHeaderViewModel InvoiceHeader { get; set; }
     }
